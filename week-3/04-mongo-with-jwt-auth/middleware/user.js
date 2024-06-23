@@ -7,15 +7,21 @@ function userMiddleware(req, res, next) {
     const token = req.headers.authorization;
     const jwtToken = token.split(" ")[1];
 
-    const decodedValue = jwt.verify(jwtToken, jwtsecret)
-
-    if(decodedValue.username){
-        req.username = decodedValue.username
-        next();
+    try{
+        const decodedValue = jwt.verify(jwtToken, jwtsecret);
+        if(decodedValue.username){
+            req.username = decodedValue.username
+            next();
+        }
+        else{
+            res.status(403).json({
+                msg: "you are not authenticated"
+            })
+        }
     }
-    else{
-        res.status(403).json({
-            msg: "you are not authenticated"
+    catch(e){
+        res.json({
+            msg: "Incorrect Inputs"
         })
     }
 }
